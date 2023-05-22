@@ -6,7 +6,7 @@ Using the [Chalice](https://aws.github.io/chalice/ "https://aws.github.io/chalic
 
 ## Architecture 
 
-AWS PICTURE HERE
+![AWS architecture](
 
 # Quick Start
 ## Requirements
@@ -133,20 +133,21 @@ A local instance of Dynamodb can be used for development using Docker
 ```yaml
 version: '3.8'
 services:
-	dynamodb-local:
-		command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-		image: "amazon/dynamodb-local:latest"
-		container_name: dynamodb-local
-		ports:
-			- "8000:8000"
-		volumes:
-			- "./docker/dynamodb:/home/dynamodblocal/data"
-		working_dir: /home/dynamodblocal
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
 ```
 The app will check for the presence of the `AWS_CHALICE_CLI_MODE` environment variable and set the `DYNAMODB_HOST` to `"http://localhost:8000"`
 ___
 Create a new table for local development with the AWS CLI
-```Shell
+```shell![Markdown API Architecture](https://github.com/chris-birch/chalice-book-api-cdk/assets/21064947/0910d4e5-6888-4569-a9ef-9db4ec8421d5)
+
 aws  dynamodb  create-table  \
 	--table-name  Books  \
 	--endpoint-url  http://localhost:8000  \
