@@ -6,7 +6,8 @@ Using the [Chalice](https://aws.github.io/chalice/ "https://aws.github.io/chalic
 
 ## Architecture 
 
-![AWS architecture](
+![Markdown API Architecture](https://github.com/chris-birch/chalice-book-api-cdk/assets/21064947/02151ed6-0b4b-4f6e-a4a7-d2a59136ab07)
+
 
 # Quick Start
 ## Requirements
@@ -183,3 +184,6 @@ We can now deploy our application using the `cdk deploy` command. Make sure youâ
 Ensure you've activated the **Poetry virtual environment** before running the `cdk deploy` command, or use `poetry run cdk deploy`.
 
 [Deploying with the AWS CDK](https://aws.github.io/chalice/tutorials/cdk.html?highlight=cdk#project-creation)
+
+<img width="1411" alt="cdk_deploy_capture" src="https://github.com/chris-birch/chalice-book-api-cdk/assets/21064947/42305b9f-09d4-4bd6-9a93-16d81886e4ca">
+
