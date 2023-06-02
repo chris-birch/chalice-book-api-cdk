@@ -104,17 +104,25 @@ def books_put(pk: str):
     request_body = app.current_request.json_body
 
     try:
-        book_data = BookPyModel(**request_body).dict()
-        Book.update(pk, book_data)
-
+        current_book = Book.findByPk(pk).attribute_values
+        if current_book['book_id'] == request_body['book_id']:
+            book_data = BookPyModel(**request_body).dict()
+            Book.update(pk, book_data)
+        else:
+            raise BadRequestError("Cannot update book ID")
+        
     except ValidationError as ve:
         return Response(body=ve.json(), status_code=400)
     
     except DoesNotExist:
         raise NotFoundError("Book not found with that PK")
     
+    except KeyError:
+        raise BadRequestError("Malformed request body")
+    
     else:
         return Response(body="", status_code=204)
+
 
 ## Delete a single book
 @app.route('/books/{pk}', methods=['DELETE'], authorizer=authorizer)
