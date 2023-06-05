@@ -8,11 +8,9 @@ on:
 
 env:
   POETRY_HOME: /opt/poetry
-  S3_STAGING_BUCKET: chalice-book-api-staging-bucket
-  AWS_DEFAULT_REGION: eu-west-2
 
 jobs:
-  package:
+  setup-and-deploy:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
@@ -39,6 +37,18 @@ jobs:
         run: poetry install --no-interaction --no-root --sync
 
       #----------------------------------------------
+      #       Setup Node & install aws-cdk
+      #----------------------------------------------
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/Hydrogen"
+          cache: 'npm'
+
+      - name: Install aws-cdk
+        run: npm install -g aws-cdk
+
+      #----------------------------------------------
       #       Deploy to AWS using CDK
       #----------------------------------------------
       - name: Configure AWS Credentials
@@ -52,4 +62,4 @@ jobs:
         run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
 
       - name: CDK Deploy
-        run: poetry run cdk deploy
+        run: poetry run cdk synth
