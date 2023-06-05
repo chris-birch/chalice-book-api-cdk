@@ -43,7 +43,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "lts/Hydrogen"
-          cache: 'npm'
 
       - name: Install aws-cdk
         run: npm install -g aws-cdk
