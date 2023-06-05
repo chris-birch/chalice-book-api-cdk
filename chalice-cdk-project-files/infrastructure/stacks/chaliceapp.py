@@ -60,7 +60,7 @@ class ChaliceApp(cdk.Stack):
 
     #     return bucket
  
-
+            
     def _create_ddb_table(self):
         dynamodb_table = dynamodb.Table(
             self, 'AppTable',
