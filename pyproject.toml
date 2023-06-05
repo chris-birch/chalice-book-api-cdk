@@ -15,8 +15,17 @@ pynamodb = "^5.4.1"
 ulid-py = "^1.1.0"
 devtools = "^0.10.0"
 
+[tool.poetry.group.dev.docs]
+optional = true
+
 [tool.poetry.group.dev.dependencies]
 aws-cdk-lib = "^2.70.0"
+
+[tool.poetry.group.testing.dependencies]
+optional = true
+
+[tool.poetry.group.testing.dependencies]
+pytest = "^7.3.1"
 
 [build-system]
 requires = ["poetry-core"]

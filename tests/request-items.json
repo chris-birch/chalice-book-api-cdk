@@ -1,0 +1,46 @@
+{
+    "Books": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "pk": {"S": "01GXTJDR8NEZMXKKS4NXGYT8QA"},
+                    "authors": {"S": "William Shakespeare"},
+                    "average_rating": {"N": "3.88"},
+                    "book_id": {"N": "154"},
+                    "isbn": {"N": "743477103"},
+                    "language_code": {"S": "eng"},
+                    "original_publication_year": {"N": "1606"},
+                    "title": {"S": "Macbeth"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "pk": {"S": "01GXTJDR8MCPWV15RXVRBCFKWW"},
+                    "authors": {"S": "Scott Westerfeld"},
+                    "average_rating": {"N": "3.86"},
+                    "book_id": {"N": "9"},
+                    "isbn": {"N": "68986533"},
+                    "language_code": {"S": "eng"},
+                    "original_publication_year": {"N": "2006"},
+                    "title": {"S": "Uglies (Uglies, #1)"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "pk": {"S": "01GVKMWCH976MA7AZBTVXCHBSY"},
+                    "authors": {"S": "Anita Diamant"},
+                    "average_rating": {"N": "4.16"},
+                    "book_id": {"N": "150"},
+                    "isbn": {"N": "312353766"},
+                    "language_code": {"S": "en-US"},
+                    "original_publication_year": {"N": "1997"},
+                    "title": {"S": "The Red Tent"}
+                }
+            }
+        }
+    ]
+}
