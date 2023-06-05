@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
-      #       check-out repo and set-up python
+      #       check-out repo & set-up python
       #----------------------------------------------    
       - uses: actions/checkout@v3
 
@@ -34,7 +34,7 @@ jobs:
         run: poetry lock --check
 
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root --sync
+        run: poetry install --with dev,testing --no-interaction --no-root --sync
 
       #----------------------------------------------
       #       Setup Node & install aws-cdk
@@ -61,4 +61,5 @@ jobs:
         run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
 
       - name: CDK Deploy
+        working-directory: ./chalice-cdk-project-files/infrastructure
         run: poetry run cdk synth
