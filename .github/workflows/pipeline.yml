@@ -50,9 +50,6 @@ jobs:
 
       - name: Generate runtime requirements.txt
         run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
-      
-      - name: ls
-        run: ls -l ${{ github.workspace }}/chalice-cdk-project-files/runtime/
 
-      # - name: CDK Deploy
-      #   run: poetry run cdk deploy
+      - name: CDK Deploy
+        run: poetry run cdk deploy
