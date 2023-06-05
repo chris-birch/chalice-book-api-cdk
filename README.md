@@ -185,5 +185,3 @@ Ensure you've activated the **Poetry virtual environment** before running the `c
 
 [Deploying with the AWS CDK](https://aws.github.io/chalice/tutorials/cdk.html?highlight=cdk#project-creation)
 
-<img width="1411" alt="cdk_deploy_capture" src="https://github.com/chris-birch/chalice-book-api-cdk/assets/21064947/42305b9f-09d4-4bd6-9a93-16d81886e4ca">
-
