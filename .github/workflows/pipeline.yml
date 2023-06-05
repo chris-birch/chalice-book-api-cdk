@@ -1,0 +1,52 @@
+name: Package and deploy to AWS
+
+on:
+  push:
+    branches: [ "feature-setup-deployment-pipeline" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  POETRY_HOME: /opt/poetry
+  S3_STAGING_BUCKET: chalice-book-api-staging-bucket
+  AWS_DEFAULT_REGION: eu-west-2
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      #----------------------------------------------
+      #       check-out repo and set-up python
+      #----------------------------------------------    
+      - uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v4
+        with: 
+          python-version: '3.9'
+          cache: 'poetry'
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+
+      #----------------------------------------------
+      #       Deploy to AWS using CDK
+      #----------------------------------------------
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2      
+
+      - name: Generate requirements.txt
+        run: poetry export -f requirements.txt --output requirements.txt
+      
+      - name: ls
+        run: ls -l .
+
+      # - name: CDK Deploy
+      #   run: poetry run cdk deploy
