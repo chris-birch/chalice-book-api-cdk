@@ -41,22 +41,24 @@ class ChaliceApp(cdk.Stack):
             self.chalice.get_role('DefaultRole')
         )
 
-        cfn_my_function = self.chalice.sam_template.get_resource("MyFunction")
-        self.my_function = _lambda.Function.from_function_name(self, "MyFunction", cfn_my_function.ref)
-        self.csv_import_bucket = self._create_s3_import_bucket()
+    # !! CSV processor currently breaks CDK Deploy, will be fixed in future feature !!
+    #
+    #     cfn_my_function = self.chalice.sam_template.get_resource("MyFunction")
+    #     self.my_function = _lambda.Function.from_function_name(self, "MyFunction", cfn_my_function.ref)
+    #     self.csv_import_bucket = self._create_s3_import_bucket()
 
-    def _create_s3_import_bucket(self):
-        fn = _lambda.Function(self, "MyBucketFunction",
-            runtime=_lambda.Runtime.NODEJS_14_X,
-            handler="index.handler",
-            code=_lambda.Code.from_asset(RUNTIME_SOURCE_DIR)
-        )
+    # def _create_s3_import_bucket(self):
+    #     fn = _lambda.Function(self, "MyBucketFunction",
+    #         runtime=_lambda.Runtime.NODEJS_14_X,
+    #         handler="index.handler",
+    #         code=_lambda.Code.from_asset(RUNTIME_SOURCE_DIR)
+    #     )
 
-        debug(RUNTIME_SOURCE_DIR)
-        bucket = s3.Bucket(self, "MyBucket")
-        bucket.add_event_notification(s3.EventType.OBJECT_CREATED, s3n.LambdaDestination(fn))
+    #     debug(RUNTIME_SOURCE_DIR)
+    #     bucket = s3.Bucket(self, "MyBucket")
+    #     bucket.add_event_notification(s3.EventType.OBJECT_CREATED, s3n.LambdaDestination(fn))
 
-        return bucket
+    #     return bucket
  
 
     def _create_ddb_table(self):
