@@ -21,7 +21,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 aws-cdk-lib = "^2.70.0"
 
-[tool.poetry.group.testing.dependencies]
+[tool.poetry.group.testing.docs]
 optional = true
 
 [tool.poetry.group.testing.dependencies]
