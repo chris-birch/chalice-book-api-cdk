@@ -35,7 +35,9 @@ aws dynamodb batch-write-item \
 
 printf '\n## Starting pytest ##\n\n'
 
-poetry run pytest -v
+poetry run pytest -v -W ignore::UserWarning
+
+PYTEST_EXIT_CODE = $?
 
 printf '\n## Stopping dynamodb container ##\n\n'
 
@@ -46,3 +48,6 @@ printf '\n## Remove local-only AWS access enviroment variables ##\n\n'
 unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
 unset AWS_DEFAULT_REGION
+
+# The scipts exit code should equal pytest's
+EXIT PYTEST_EXIT_CODE
