@@ -50,4 +50,4 @@ unset AWS_SECRET_ACCESS_KEY
 unset AWS_DEFAULT_REGION
 
 # The scipts exit code should equal pytest's
-EXIT PYTEST_EXIT_CODE
+exit PYTEST_EXIT_CODE
