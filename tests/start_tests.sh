@@ -35,7 +35,7 @@ aws dynamodb batch-write-item \
 
 printf '\n## Starting pytest ##\n\n'
 
-poetry run pytest -v -W ignore::UserWarning --maxfail=1
+poetry run pytest -v
 
 printf '\n## Stopping dynamodb container ##\n\n'
 
