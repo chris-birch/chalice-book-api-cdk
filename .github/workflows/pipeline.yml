@@ -1,0 +1,71 @@
+name: Package and deploy to AWS
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  POETRY_HOME: /opt/poetry
+  AWS_DEFAULT_REGION: eu-west-2
+
+jobs:
+  setup-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      #----------------------------------------------
+      #       check-out repo & set-up python
+      #----------------------------------------------    
+      - uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v4
+        with: 
+          python-version: '3.9'
+          cache: 'poetry'
+
+      #----------------------------------------------
+      #       Install dependencies 
+      #----------------------------------------------
+      - name: Check poetry lock file
+        run: poetry lock --check
+
+      - name: Install dependencies
+        run: poetry install --with dev,testing --no-interaction --no-root --sync
+
+      #----------------------------------------------
+      #       Run Pytest
+      #----------------------------------------------
+      - name: Run testing script
+        working-directory: ./tests
+        run: ./start_tests.sh
+
+      #----------------------------------------------
+      #       Setup Node & install aws-cdk
+      #----------------------------------------------
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/Hydrogen"
+
+      - name: Install aws-cdk
+        run: npm install -g aws-cdk
+
+      #----------------------------------------------
+      #       Deploy to AWS using CDK
+      #----------------------------------------------
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}      
+
+      - name: Generate runtime requirements.txt
+        run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
+
+      - name: CDK Deploy
+        working-directory: ./chalice-cdk-project-files/infrastructure
+        run: poetry run cdk deploy

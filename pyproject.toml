@@ -15,13 +15,13 @@ pynamodb = "^5.4.1"
 ulid-py = "^1.1.0"
 devtools = "^0.10.0"
 
-[tool.poetry.group.dev.docs]
+[tool.poetry.group.dev]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
 aws-cdk-lib = "^2.70.0"
 
-[tool.poetry.group.testing.dependencies]
+[tool.poetry.group.testing]
 optional = true
 
 [tool.poetry.group.testing.dependencies]

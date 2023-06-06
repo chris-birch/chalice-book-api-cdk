@@ -1,7 +1,16 @@
 printf '\nStarting tests...\n'
+printf '\n## Create local-only AWS access enviroment variables ##\n\n'
+
+export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+export AWS_DEFAULT_REGION=eu-west-2
+
+# These are NOT real access keys!!! They're used for local Dynamodb access only.
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html#envvars-set
+
 printf '\n## Start Dynamodb container ##\n\n'
 
-docker-compose up --detach
+docker compose up --detach
 
 printf '\n## Create Dynamodb Table ##\n\n'
 
@@ -26,8 +35,19 @@ aws dynamodb batch-write-item \
 
 printf '\n## Starting pytest ##\n\n'
 
-pytest -v -W ignore::UserWarning
+poetry run pytest -v -W ignore::UserWarning
+
+PYTEST_EXIT_CODE=$?
 
 printf '\n## Stopping dynamodb container ##\n\n'
 
 docker compose down
+
+# Remove local-only AWS access enviroment variables
+
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_DEFAULT_REGION
+
+# The scipts exit code should equal pytest's
+exit $PYTEST_EXIT_CODE
