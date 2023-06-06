@@ -2,8 +2,6 @@ name: Package and deploy to AWS
 
 on:
   push:
-    branches: [ "feature-setup-deployment-pipeline" ]
-  pull_request:
     branches: [ "main" ]
 
 env:
@@ -68,6 +66,6 @@ jobs:
       - name: Generate runtime requirements.txt
         run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
 
-      # - name: CDK Deploy
-      #   working-directory: ./chalice-cdk-project-files/infrastructure
-      #   run: poetry run cdk deploy
+      - name: CDK Deploy
+        working-directory: ./chalice-cdk-project-files/infrastructure
+        run: poetry run cdk deploy

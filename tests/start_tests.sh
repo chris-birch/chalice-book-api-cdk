@@ -43,7 +43,7 @@ printf '\n## Stopping dynamodb container ##\n\n'
 
 docker compose down
 
-printf '\n## Remove local-only AWS access enviroment variables ##\n\n'
+# Remove local-only AWS access enviroment variables
 
 unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
