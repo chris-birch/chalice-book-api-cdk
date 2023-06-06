@@ -1,4 +1,11 @@
 printf '\nStarting tests...\n'
+printf '\n## Create local-only AWS access enviroment variables ##\n\n'
+# These are NOT real access credentials!!! They're required for local Dynamodb access only.
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html#envvars-set
+
+export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
 printf '\n## Start Dynamodb container ##\n\n'
 
 docker compose up --detach
@@ -31,3 +38,8 @@ poetry run pytest -v -W ignore::UserWarning
 printf '\n## Stopping dynamodb container ##\n\n'
 
 docker compose down
+
+printf '\n## Remove local-only AWS access enviroment variables ##\n\n'
+
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
