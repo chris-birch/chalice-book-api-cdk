@@ -150,7 +150,7 @@ def test_get_by_pk():
 def test_get_by_pk_not_found():
     with Client(app) as client:
         response = client.http.get('/books/Z1GVKMWCH976MA7AZBTVXCKBSY')
-        assert response.status_code == 500
+        assert response.status_code == 404
 
 
 def test_update_by_pk():
