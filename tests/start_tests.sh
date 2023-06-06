@@ -1,7 +1,7 @@
 printf '\nStarting tests...\n'
 printf '\n## Start Dynamodb container ##\n\n'
 
-docker-compose up --detach
+docker compose up --detach
 
 printf '\n## Create Dynamodb Table ##\n\n'
 

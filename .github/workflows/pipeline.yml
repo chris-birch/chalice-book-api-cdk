@@ -8,6 +8,7 @@ on:
 
 env:
   POETRY_HOME: /opt/poetry
+  AWS_DEFAULT_REGION: eu-west-2
 
 jobs:
   setup-and-deploy:
@@ -61,8 +62,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2      
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  
 
       - name: Generate runtime requirements.txt
         run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
