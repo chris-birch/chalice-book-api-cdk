@@ -37,7 +37,7 @@ printf '\n## Starting pytest ##\n\n'
 
 poetry run pytest -v -W ignore::UserWarning
 
-PYTEST_EXIT_CODE = $?
+PYTEST_EXIT_CODE=$?
 
 printf '\n## Stopping dynamodb container ##\n\n'
 
@@ -50,4 +50,4 @@ unset AWS_SECRET_ACCESS_KEY
 unset AWS_DEFAULT_REGION
 
 # The scipts exit code should equal pytest's
-exit PYTEST_EXIT_CODE
+exit $PYTEST_EXIT_CODE
