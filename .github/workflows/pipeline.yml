@@ -37,6 +37,13 @@ jobs:
         run: poetry install --with dev,testing --no-interaction --no-root --sync
 
       #----------------------------------------------
+      #       Run Pytest
+      #----------------------------------------------
+      - name: Run testing script
+        working-directory: ./tests
+        run: ./start_tests.sh
+
+      #----------------------------------------------
       #       Setup Node & install aws-cdk
       #----------------------------------------------
       - name: Set up Node
@@ -60,6 +67,6 @@ jobs:
       - name: Generate runtime requirements.txt
         run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
 
-      - name: CDK Deploy
-        working-directory: ./chalice-cdk-project-files/infrastructure
-        run: poetry run cdk deploy
+      # - name: CDK Deploy
+      #   working-directory: ./chalice-cdk-project-files/infrastructure
+      #   run: poetry run cdk deploy
