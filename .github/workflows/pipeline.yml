@@ -68,4 +68,4 @@ jobs:
 
       - name: CDK Deploy
         working-directory: ./chalice-cdk-project-files/infrastructure
-        run: poetry run cdk deploy
+        run: poetry run cdk diff
