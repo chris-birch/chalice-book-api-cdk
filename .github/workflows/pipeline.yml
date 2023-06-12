@@ -2,7 +2,7 @@ name: Package and deploy to AWS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature-setup-deployment-pipeline" ]
 
 env:
   POETRY_HOME: /opt/poetry
