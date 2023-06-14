@@ -2,7 +2,7 @@ name: Deploy to AWS
 
 on:
   push:
-    branches: [ "main", "feature-add-pipeline-folder-filter"]
+    branches: [ "main" ]
     paths: 
       - 'chalice-cdk-project-files/**'
 
@@ -29,7 +29,7 @@ jobs:
           cache: 'poetry'
 
       #----------------------------------------------
-      #       Install dependencies 
+      #       Install app dependencies 
       #----------------------------------------------
       - name: Check poetry lock file
         run: poetry lock --check
@@ -43,12 +43,6 @@ jobs:
       - name: Run testing script
         working-directory: ./tests
         run: ./start_tests.sh
-
-      #-----------------------------------------------------------------------------------------------------
-      #       NOTE: The below doesn't work due to CDK Deploy / Diff / Syth detecting changes to the app code
-      #             even when there hasn't been any. CDK Deploy will always update the lambda function code
-      #             on a fresh git clone - An 'issue' needs to be raised with Chalice framework.
-      #-----------------------------------------------------------------------------------------------------
       
       #----------------------------------------------
       #       Setup Node & install aws-cdk
@@ -76,4 +70,4 @@ jobs:
 
       - name: CDK Deploy
         working-directory: ./chalice-cdk-project-files/infrastructure
-        run: poetry run cdk diff
+        run: poetry run cdk deploy
