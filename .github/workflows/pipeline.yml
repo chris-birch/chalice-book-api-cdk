@@ -1,8 +1,10 @@
-name: Code Testing
+name: Deploy to AWS
 
 on:
   push:
     branches: [ "main" ]
+    paths: 
+      - 'chalice-cdk-project-files/**'
 
 env:
   POETRY_HOME: /opt/poetry
@@ -27,7 +29,7 @@ jobs:
           cache: 'poetry'
 
       #----------------------------------------------
-      #       Install dependencies 
+      #       Install app dependencies 
       #----------------------------------------------
       - name: Check poetry lock file
         run: poetry lock --check
@@ -41,37 +43,31 @@ jobs:
       - name: Run testing script
         working-directory: ./tests
         run: ./start_tests.sh
-
-      #-----------------------------------------------------------------------------------------------------
-      #       NOTE: The below doesn't work due to CDK Deploy / Diff / Syth detecting changes to the app code
-      #             even when there hasn't been any. CDK Deploy will always update the lambda function code
-      #             on a fresh git clone - An 'issue' needs to be raised with Chalice framework.
-      #-----------------------------------------------------------------------------------------------------
       
-      # #----------------------------------------------
-      # #       Setup Node & install aws-cdk
-      # #----------------------------------------------
-      # - name: Set up Node
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: "lts/Hydrogen"
+      #----------------------------------------------
+      #       Setup Node & install aws-cdk
+      #----------------------------------------------
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/Hydrogen"
 
-      # - name: Install aws-cdk
-      #   run: npm install -g aws-cdk
+      - name: Install aws-cdk
+        run: npm install -g aws-cdk
 
-      # #----------------------------------------------
-      # #       Deploy to AWS using CDK
-      # #----------------------------------------------
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ env.AWS_DEFAULT_REGION }}      
+      #----------------------------------------------
+      #       Deploy to AWS using CDK
+      #----------------------------------------------
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}      
 
-      # - name: Generate runtime requirements.txt
-      #   run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
+      - name: Generate runtime requirements.txt
+        run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
 
-      # - name: CDK Deploy
-      #   working-directory: ./chalice-cdk-project-files/infrastructure
-      #   run: poetry run cdk diff
+      - name: CDK Deploy
+        working-directory: ./chalice-cdk-project-files/infrastructure
+        run: poetry run cdk deploy
