@@ -138,28 +138,28 @@ def books_delete(pk: int):
 
 
 ## Lambda function to handle CSV imports via an S3 bucket
-@app.lambda_function(name='MyFunction')
-def other_lambda_function(event, context):
+# @app.lambda_function(name='MyFunction')
+# def other_lambda_function(event, context):
     
-    debug(event)
-    print("############################")
-    debug(context)
+#     debug(event)
+#     print("############################")
+#     debug(context)
 
 
-    #TODO This needs to handle multiple files
-    s3_file_upload_name = event['Records'][0]['s3']['object']['key']
+#     #TODO This needs to handle multiple files
+#     s3_file_upload_name = event['Records'][0]['s3']['object']['key']
     
-    # try:
-    #     # TODO Validate that we have the correct CSV file(s)
-    #     csv_file = s3.Bucket(S3_IMPORT_BUCKET).Object(s3_file_upload_name).get()
+#     # try:
+#     #     # TODO Validate that we have the correct CSV file(s)
+#     #     csv_file = s3.Bucket(S3_IMPORT_BUCKET).Object(s3_file_upload_name).get()
         
-    #     try:
-    #         foo = read_csv(csv_file['Body'], on_bad_lines='skip')
-    #         foo['isbn'] = to_numeric(foo['isbn'], errors='coerce', downcast='signed')
+#     #     try:
+#     #         foo = read_csv(csv_file['Body'], on_bad_lines='skip')
+#     #         foo['isbn'] = to_numeric(foo['isbn'], errors='coerce', downcast='signed')
             
-    #         batchLoadDataFromJson((foo.to_json(orient="records")))
-    #     except ValueError as e:
-    #         print(e)
+#     #         batchLoadDataFromJson((foo.to_json(orient="records")))
+#     #     except ValueError as e:
+#     #         print(e)
 
-    # except Exception as e:
-    #     print(e)
+#     # except Exception as e:
+#     #     print(e)
