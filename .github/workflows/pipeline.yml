@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main", "feature-add-pipeline-folder-filter"]
     paths: 
-      - 'chalice-cdk-project-files'
+      - 'chalice-cdk-project-files/**'
 
 env:
   POETRY_HOME: /opt/poetry

@@ -43,7 +43,7 @@ The Book Class ...
 class Book:
     def allBooks():
         """
-        Scan DynamoDB for ...
+        Scan DynamoDB for all books and return the result
         """
         scan_results = list()
         try: 
