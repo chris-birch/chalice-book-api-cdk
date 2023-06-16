@@ -1,22 +1,17 @@
-import { Amplify, API } from 'aws-amplify';
-
+import { Amplify } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import {
-
-
   QueryClient,
-
   QueryClientProvider,
-
 } from 'react-query'
+import { AppBar, Button, Toolbar, Typography } from '@mui/material';
 
-
-
-import Books from './Books';
 import awsExports from './aws-exports';
-Amplify.configure({awsExports,
 
+import BookGrid from './BookGrid';
+
+Amplify.configure({awsExports,
   Auth: {
     identityPoolId: 'eu-west-2:a74e58bf-ba1a-4fdb-b205-457f627970ad', // REQUIRED - Amazon Cognito Identity Pool ID
     region: 'eu-west-2', // REQUIRED - Amazon Cognito Region
@@ -35,28 +30,21 @@ Amplify.configure({awsExports,
   }
 });
 
-// API.get(apiName, path, myInit)
-//   .then((response) => {
-//     console.log(response)
-//   })
-//   .catch((error) => {
-//     console.log(error.response);
-//   });
-
-
-
-// Create a client
-
 const queryClient = new QueryClient()
 
-function App({ signOut, user }) {
+function App({ signOut }) {
   return (
-  <QueryClientProvider client={queryClient}>
-      <h1>Hello {user.username}</h1>
-      <button onClick={signOut}>Sign out</button>
-
-    <Books api={API}/>
-  </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Books
+          </Typography>
+          <Button color="inherit" onClick={signOut}>Sign out</Button>
+        </Toolbar>
+      </AppBar>
+      <BookGrid />
+    </QueryClientProvider>
   );
 }
 
