@@ -25,3 +25,10 @@ module "csv_processor" {
 
   depends_on = [ module.core_resources ]
 }
+
+module "user_api" {
+  source = "./modules/user_api"
+  project_name = var.project_name
+  region = var.region
+  depends_on = [ module.core_resources ]
+}

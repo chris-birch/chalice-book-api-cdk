@@ -90,6 +90,10 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# This is a staging folder for lambda code and shouldn't be in the repo.
+terraform/modules/csv_processor/archive/
+terraform/modules/user_api/archive/
+
 ### Go ###
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore

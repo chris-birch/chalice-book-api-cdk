@@ -88,6 +88,14 @@ resource "aws_iam_role" "csv_processor_execution_role" {
   })
 }
 
+resource "aws_lambda_permission" "s3_execute_lambda_permission" {
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.csv_processor.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.csv_processor_data_store.arn
+}
+
 resource "aws_iam_role_policy_attachment" "attatch_access_csv_bucket_policy" {
   role       = aws_iam_role.csv_processor_execution_role.name
   policy_arn = aws_iam_policy.access_csv_bucket.arn
@@ -105,12 +113,4 @@ resource "aws_iam_role_policy_attachment" "attatch_access_admin_api_policy" {
 resource "aws_iam_role_policy_attachment" "attatch_access_cloudwatch_policy" {
   role       = aws_iam_role.csv_processor_execution_role.name
   policy_arn = aws_iam_policy.access_cloudwatch.arn
-}
-
-resource "aws_lambda_permission" "s3_execute_lambda_permission" {
-  statement_id  = "AllowExecutionFromS3"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.csv_processor.function_name
-  principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.csv_processor_data_store.arn
 }
