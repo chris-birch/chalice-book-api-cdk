@@ -20,6 +20,7 @@ resource "aws_api_gateway_method" "get" {
   http_method   = "GET"
   resource_id   = aws_api_gateway_resource.book_id.id
   rest_api_id   = aws_api_gateway_rest_api.user_api.id
+  api_key_required = true
 }
 
 # Create an integration with the User API Function
@@ -46,7 +47,7 @@ resource "aws_api_gateway_deployment" "user_api" {
     redeployment = sha1(jsonencode([
       aws_api_gateway_resource.book_id,
       aws_api_gateway_method.get,
-      aws_api_gateway_integration.user_api_handler_function.id,
+      aws_api_gateway_integration.user_api_handler_function,
     ]))
   }
 
@@ -79,7 +80,29 @@ resource "aws_api_gateway_method_settings" "example" {
   }
 }
 
-#
-## Roles & Policy's ##
-#
 
+resource "aws_api_gateway_usage_plan" "standard_plan" {
+  name         = "user-api-usage-plan"
+  description  = "Standard User API usage plan"
+
+  api_stages {
+    api_id = aws_api_gateway_rest_api.user_api.id
+    stage  = aws_api_gateway_stage.user_api_prod.stage_name
+  }
+
+  throttle_settings {
+    burst_limit = 5
+    rate_limit  = 10
+  }
+}
+
+resource "aws_api_gateway_usage_plan_key" "user_key" {
+  key_id        = aws_api_gateway_api_key.user_key.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_api_gateway_usage_plan.standard_plan.id
+
+  depends_on = [ 
+    aws_api_gateway_usage_plan.standard_plan, 
+    aws_api_gateway_api_key.user_key
+    ]
+}
