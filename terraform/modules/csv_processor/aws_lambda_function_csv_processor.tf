@@ -54,7 +54,7 @@ resource "aws_lambda_function" "csv_processor" {
 
   environment {
     variables = {
-      APIURL = "https://79ciii9fu7.execute-api.eu-west-2.amazonaws.com/api/books"
+      APIURL = "https://79ciii9fu7.execute-api.eu-west-2.amazonaws.com/api/books" # <- Update this value after deploy
     }
   }
 

@@ -30,5 +30,16 @@ module "user_api" {
   source = "./modules/user_api"
   project_name = var.project_name
   region = var.region
+  books_table_name = module.core_resources.books_table_name
+  books_table_arn = module.core_resources.books_table_arn
+  depends_on = [ module.core_resources ]
+}
+
+module "chalice_cdk" {
+  source = "./modules/chalice_cdk"
+  project_name = var.project_name
+  region = var.region
+  books_table_name = module.core_resources.books_table_name
+  books_table_arn = module.core_resources.books_table_arn
   depends_on = [ module.core_resources ]
 }

@@ -54,7 +54,7 @@ resource "aws_lambda_function" "user_api_handler" {
 
   environment {
     variables = {
-      TABLENAME = "chalice-cdk-project-files-AppTable815C50BC-1D2JPYHQ9LZCJ"
+      TABLENAME = var.books_table_name
     }
   }
 
@@ -101,4 +101,9 @@ resource "aws_iam_role_policy_attachment" "attatch_access_books_table_policy" {
   policy_arn = aws_iam_policy.access_books_table.arn
 
   depends_on = [ aws_iam_policy.access_books_table ]
+}
+
+resource "aws_iam_role_policy_attachment" "attatch_access_cloudwatch_policy" {
+  role       = aws_iam_role.user_api_execution_role.name
+  policy_arn = aws_iam_policy.user_api_access_cloudwatch.arn
 }

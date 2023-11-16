@@ -34,6 +34,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# This is dynamically generated and shouldn't be in the repo
+chalice-cdk-project-files/runtime/requirements.txt
+
 ### VisualStudioCode ###
 .vscode
 

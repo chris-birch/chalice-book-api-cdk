@@ -12,7 +12,7 @@ resource "aws_iam_policy" "access_admin_api" {
                 "execute-api:ManageConnections"
             ],
         Effect   = "Allow"
-        Resource = "arn:aws:lambda:eu-west-2:599106691906:function:chalice-cdk-project-files-APIHandler-oodP32obQvFe"
+        Resource = "arn:aws:lambda:eu-west-2:599106691906:function:chalice-cdk-project-files-APIHandler-oodP32obQvFe" # <- Update this value after deploy
       }
     ]
   })
