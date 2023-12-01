@@ -36,7 +36,7 @@ class BookPyList(BaseModel):
         return book_object_list
 
 ## Get all books || Or query by book ID
-@app.route('/books', methods=['GET'])
+@app.route('/books', methods=['GET'], authorizer=authorizer)
 def get_all_books():
     if app.current_request.query_params:
         query_parameters = app.current_request.to_dict()['query_params']
@@ -58,7 +58,7 @@ def get_all_books():
 
 
 ## Create a new book
-@app.route('/books', methods=['POST'],content_types=['application/json'])
+@app.route('/books', methods=['POST'],content_types=['application/json'], authorizer=authorizer)
 def books_post():
     request_body = app.current_request.json_body
 
@@ -89,7 +89,7 @@ def books_post():
 
 
 ## Get book by PK 
-@app.route('/books/{pk}', methods=['GET'])
+@app.route('/books/{pk}', methods=['GET'], authorizer=authorizer)
 def books(pk: str):
     try:
         return Book.findByPk(pk).attribute_values

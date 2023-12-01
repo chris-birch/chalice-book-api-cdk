@@ -3,15 +3,19 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
@@ -44,16 +48,47 @@ func GetFileContents(ctx context.Context, bucketName string, objectKey string) (
 	return body, err
 }
 
+func encodeData(rawData []byte) []byte {
+	h := sha256.New()
+	h.Write([]byte(rawData))
+
+	bs := hex.EncodeToString(h.Sum((nil)))
+
+	return []byte(bs)
+}
+
 func postToApi(json []byte) {
 	url := ApiUrl
 
 	// The API requires the book list to be in a JSON "data" object
 	newBody := "{\"data\":" + string(json) + "}"
 
-	// Send request to API
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(newBody)))
-	req.Header.Set("Content-Type", "application/json")
+	// Load AWS config
+	cfg, err := config.LoadDefaultConfig(context.TODO())
 
+	if err != nil {
+		panic(err)
+	}
+
+	// Get Lambda credentials
+	credentials, err := cfg.Credentials.Retrieve(context.TODO())
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Sign the API Gateway HTTP request as we're using an IAM Authorizor on all API resources
+	hash := bytes.NewBuffer(encodeData([]byte(newBody))).String()
+	req, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer([]byte(newBody)))
+	req.Header.Set("Content-Type", "application/json")
+	signer := v4.NewSigner()
+	err = signer.SignHTTP(context.TODO(), credentials, req, hash, "execute-api", cfg.Region, time.Now())
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Send the singed request to the API
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

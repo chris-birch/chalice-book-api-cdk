@@ -26,6 +26,7 @@ resource "aws_s3_object" "user_api_function_archive" {
 
   key    = "user_api_code.zip"
   source = data.archive_file.user_api_function_archive.output_path
+  source_hash = filemd5("${path.module}/archive/csv_processor_code.zip")
 
   depends_on = [ data.archive_file.user_api_function_archive ]
 

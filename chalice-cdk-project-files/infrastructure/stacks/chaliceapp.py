@@ -3,6 +3,7 @@ import json
 
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ssm as ssm
+from aws_cdk import aws_apigateway as apigateway
 
 from devtools import debug
 
@@ -47,9 +48,9 @@ class ChaliceApp(cdk.Stack):
         )
         
         # Save outputs needed to update Terraform assets later in the deployment
+
         cfn_api_handler_function = self.chalice.get_resource("APIHandler")
         api_handler_function = _lambda.Function.from_function_name(self, "MyFunction", cfn_api_handler_function.ref)
-        
         ssm.StringParameter(self, "EndpointURL",
             description="Endpoint URL of the Chalice CDK API HAndler",
             parameter_name="/chalice_cdk_project/outputs/EndpointURL",
@@ -60,4 +61,11 @@ class ChaliceApp(cdk.Stack):
             description="API Handler Function ARN",
             parameter_name="/chalice_cdk_project/outputs/api_handler/function_arn",
             string_value=api_handler_function.function_arn,
+        )
+
+        cfn_api_gateway = apigateway.RestApi.from_rest_api_id(self, "api", rest_api_id="RestAPI")
+        ssm.StringParameter(self, "RestAPIExecuteARN",
+            description="API Handler Function ARN",
+            parameter_name="/chalice_cdk_project/outputs/restApi/execute_arn",
+            string_value=cfn_api_gateway.arn_for_execute_api("POST"),
         )

@@ -27,6 +27,8 @@ resource "aws_s3_object" "csv_processor_function_archive" {
   key    = "csv_processor_code.zip"
   source = data.archive_file.function_archive.output_path
 
+  source_hash = filemd5("${path.module}/archive/csv_processor_code.zip")
+
   depends_on = [ data.archive_file.function_archive ]
 
 }
@@ -48,13 +50,14 @@ resource "aws_lambda_function" "csv_processor" {
   memory_size = 128
 
   source_code_hash = data.archive_file.function_archive.output_base64sha256
+  
 
   s3_bucket = aws_s3_bucket.csv_processor_function_code.id
   s3_key = aws_s3_object.csv_processor_function_archive.key
 
   environment {
     variables = {
-      APIURL = "https://79ciii9fu7.execute-api.eu-west-2.amazonaws.com/api/books" # <- Update this value after deploy
+      APIURL = "UPDATE_BY_SCRIPT" # <- This will be updated by 'update_terraform_asset_attributes.py'
     }
   }
 
@@ -62,6 +65,27 @@ resource "aws_lambda_function" "csv_processor" {
     aws_iam_role.csv_processor_execution_role, 
     aws_s3_object.csv_processor_function_archive 
   ]
+}
+
+
+#
+## SSM Parameter Outputs ##
+#
+
+resource "aws_ssm_parameter" "function_name" {
+  name  = "/chalice_cdk_project/outputs/csv_processor/function_name"
+  type  = "String"
+  value = aws_lambda_function.csv_processor.function_name
+
+  depends_on = [ aws_lambda_function.csv_processor ]
+}
+
+resource "aws_ssm_parameter" "function_role_name" {
+  name  = "/chalice_cdk_project/outputs/csv_processor/function_role_name"
+  type  = "String"
+  value = aws_iam_role.csv_processor_execution_role.name
+
+  depends_on = [ aws_lambda_function.csv_processor ]
 }
 
 
@@ -101,13 +125,6 @@ resource "aws_iam_role_policy_attachment" "attatch_access_csv_bucket_policy" {
   policy_arn = aws_iam_policy.access_csv_bucket.arn
 
   depends_on = [ aws_iam_policy.access_csv_bucket ]
-}
-
-resource "aws_iam_role_policy_attachment" "attatch_access_admin_api_policy" {
-  role       = aws_iam_role.csv_processor_execution_role.name
-  policy_arn = aws_iam_policy.access_admin_api.arn
-
-  depends_on = [ aws_iam_policy.access_admin_api ]
 }
 
 resource "aws_iam_role_policy_attachment" "attatch_access_cloudwatch_policy" {
