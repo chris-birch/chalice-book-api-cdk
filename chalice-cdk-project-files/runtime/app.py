@@ -36,7 +36,7 @@ class BookPyList(BaseModel):
         return book_object_list
 
 ## Get all books || Or query by book ID
-@app.route('/books', methods=['GET'])
+@app.route('/books', methods=['GET'], authorizer=authorizer)
 def get_all_books():
     if app.current_request.query_params:
         query_parameters = app.current_request.to_dict()['query_params']
@@ -58,7 +58,7 @@ def get_all_books():
 
 
 ## Create a new book
-@app.route('/books', methods=['POST'],content_types=['application/json'])
+@app.route('/books', methods=['POST'],content_types=['application/json'], authorizer=authorizer)
 def books_post():
     request_body = app.current_request.json_body
 
@@ -89,7 +89,7 @@ def books_post():
 
 
 ## Get book by PK 
-@app.route('/books/{pk}', methods=['GET'])
+@app.route('/books/{pk}', methods=['GET'], authorizer=authorizer)
 def books(pk: str):
     try:
         return Book.findByPk(pk).attribute_values
@@ -135,31 +135,3 @@ def books_delete(pk: int):
     
     else:
         return Response(body="", status_code=204)
-
-
-## Lambda function to handle CSV imports via an S3 bucket
-# @app.lambda_function(name='MyFunction')
-# def other_lambda_function(event, context):
-    
-#     debug(event)
-#     print("############################")
-#     debug(context)
-
-
-#     #TODO This needs to handle multiple files
-#     s3_file_upload_name = event['Records'][0]['s3']['object']['key']
-    
-#     # try:
-#     #     # TODO Validate that we have the correct CSV file(s)
-#     #     csv_file = s3.Bucket(S3_IMPORT_BUCKET).Object(s3_file_upload_name).get()
-        
-#     #     try:
-#     #         foo = read_csv(csv_file['Body'], on_bad_lines='skip')
-#     #         foo['isbn'] = to_numeric(foo['isbn'], errors='coerce', downcast='signed')
-            
-#     #         batchLoadDataFromJson((foo.to_json(orient="records")))
-#     #     except ValueError as e:
-#     #         print(e)
-
-#     # except Exception as e:
-#     #     print(e)
