@@ -13,82 +13,82 @@ env:
   CONFIG_DIRECTORY: "./terraform"
 
 jobs:
-  # build-go-binaries:
-  #     #----------------------------------------------
-  #     #       check-out & build Go binaries
-  #     #----------------------------------------------
-  #     runs-on: ubuntu-latest
-  #     strategy:
-  #       matrix:
-  #         go-projects: [csv_processor_function_code, user_api_function_code]    
-  #     defaults:
-  #      run: 
-  #         working-directory: ./go/${{ matrix.go-projects }}
-  #     steps:
-  #       - uses: actions/checkout@v4
+  build-go-binaries:
+      #----------------------------------------------
+      #       check-out & build Go binaries
+      #----------------------------------------------
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          go-projects: [csv_processor_function_code, user_api_function_code]    
+      defaults:
+       run: 
+          working-directory: ./go/${{ matrix.go-projects }}
+      steps:
+        - uses: actions/checkout@v4
         
-  #       - name: Setup Go
-  #         uses: actions/setup-go@v4
-  #         with:
-  #           go-version: '1.20'
+        - name: Setup Go
+          uses: actions/setup-go@v4
+          with:
+            go-version: '1.20'
         
-  #       - name: Install dependencies
-  #         run: go get .
+        - name: Install dependencies
+          run: go get .
           
-  #       - name: Build Binaries
-  #         run: GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o ./binaries/bootstrap .
+        - name: Build Binaries
+          run: GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o ./binaries/bootstrap .
 
-  #       - name: Archive binaries
-  #         run: |
-  #           mkdir ${{ github.workspace }}/archive && cd ${{ github.workspace }}/archive
-  #           zip ${{ matrix.go-projects }} -j "${{ github.workspace }}/go/${{ matrix.go-projects }}/binaries/bootstrap"
+        - name: Archive binaries
+          run: |
+            mkdir ${{ github.workspace }}/archive && cd ${{ github.workspace }}/archive
+            zip ${{ matrix.go-projects }} -j "${{ github.workspace }}/go/${{ matrix.go-projects }}/binaries/bootstrap"
 
-  #       - name: Save archive as artifact
-  #         uses: actions/upload-artifact@v4
-  #         with:
-  #           name: ${{ matrix.go-projects }}
-  #           path: ${{ github.workspace }}/archive/**
-  #           if-no-files-found: error
+        - name: Save archive as artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: ${{ matrix.go-projects }}
+            path: ${{ github.workspace }}/archive/**
+            if-no-files-found: error
   
-  # sync-artifacts-with-s3:
-  #   #----------------------------------------------
-  #   #       Sync artifacts to an S3 bucket
-  #   #----------------------------------------------
-  #   needs: build-go-binaries
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         sparse-checkout: |
-  #           upload_go_binaries_to_s3.py
-  #         sparse-checkout-cone-mode: false
+  sync-artifacts-with-s3:
+    #----------------------------------------------
+    #       Sync artifacts to an S3 bucket
+    #----------------------------------------------
+    needs: build-go-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            upload_go_binaries_to_s3.py
+          sparse-checkout-cone-mode: false
 
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         merge-multiple: true
-  #         path: ${{ github.workspace }}/artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: ${{ github.workspace }}/artifacts
 
-  #     - uses: actions/setup-python@v5
-  #       with:
-  #         python-version: '3.9'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
 
-  #     - name: Configure AWS Credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
       
-  #     - name: Run sync script
-  #       run: |
-  #         pip install boto3
-  #         python ./scripts/upload_go_binaries_to_s3.py ${{ github.workspace }}/artifacts
+      - name: Run sync script
+        run: |
+          pip install boto3
+          python ./scripts/upload_go_binaries_to_s3.py ${{ github.workspace }}/artifacts
 
   plan-terraform-assets:
     #----------------------------------------------
     #       Terraform Plan
     #----------------------------------------------
-  #   needs: sync-artifacts-with-s3      
+      needs: sync-artifacts-with-s3      
       name: "Terraform Plan"
       runs-on: ubuntu-latest
       permissions:
@@ -156,35 +156,35 @@ jobs:
                 body: output
               });
           
-#   run-py-tests:
-#     runs-on: ubuntu-latest
-#     steps:
-#       #----------------------------------------------
-#       #       check-out repo & set-up python
-#       #----------------------------------------------    
-#       - uses: actions/checkout@v3
-# 
-#       - name: Install Poetry
-#         run: pipx install poetry
-# 
-#       - name: Setup Python 3.9
-#         uses: actions/setup-python@v4
-#         with: 
-#           python-version: '3.9'
-#           cache: 'poetry'
-# 
-#       #----------------------------------------------
-#       #       Install app dependencies 
-#       #----------------------------------------------
-#       - name: Check oetry lock file
-#         run: poetry check --lock
-# 
-#       - name: Install dependencies
-#         run: poetry install --with dev,testing --no-interaction --no-root --sync
-# 
-#       #----------------------------------------------
-#       #       Run Pytest
-#       #----------------------------------------------
-#       - name: Run testing script
-#         working-directory: ./tests
-#         run: ./start_tests.sh
+  run-py-tests:
+    runs-on: ubuntu-latest
+    steps:
+      #----------------------------------------------
+      #       check-out repo & set-up python
+      #----------------------------------------------    
+      - uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v4
+        with: 
+          python-version: '3.9'
+          cache: 'poetry'
+
+      #----------------------------------------------
+      #       Install app dependencies 
+      #----------------------------------------------
+      - name: Check oetry lock file
+        run: poetry check --lock
+
+      - name: Install dependencies
+        run: poetry install --with dev,testing --no-interaction --no-root --sync
+
+      #----------------------------------------------
+      #       Run Pytest
+      #----------------------------------------------
+      - name: Run testing script
+        working-directory: ./tests
+        run: ./start_tests.sh
