@@ -1,0 +1,140 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [ "main-test" ]
+
+env:
+  POETRY_HOME: /opt/poetry
+  AWS_DEFAULT_REGION: eu-west-2
+  TF_CLOUD_ORGANIZATION: "BlueCrossIT"
+  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+  TF_WORKSPACE: "chalice-book-api-cdk"
+  CONFIG_DIRECTORY: "./terraform"
+
+jobs:
+  deploy-terraform-assets:
+    #----------------------------------------------
+    #       Deploy via Terraform
+    #----------------------------------------------
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+    
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
+        id: apply-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+    
+      - name: Create Apply Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
+        id: apply-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+    
+      - name: Apply
+        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
+        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
+        id: apply
+        with:
+          run: ${{ steps.apply-run.outputs.run_id }}
+          comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
+          
+  deploy-chalice-assets:
+    needs: deploy-terraform-assets
+    runs-on: ubuntu-latest
+    steps:
+      #----------------------------------------------
+      #       check-out repo & set-up python
+      #----------------------------------------------    
+      - uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v4
+        with: 
+          python-version: '3.9'
+          cache: 'poetry'
+
+      #----------------------------------------------
+      #       Install app dependencies 
+      #----------------------------------------------
+      - name: Check poetry lock file
+        run: poetry check --lock
+
+      - name: Install dependencies
+        run: poetry install --with dev,testing --no-interaction --no-root --sync
+
+      #----------------------------------------------
+      #       Run Pytest
+      #----------------------------------------------
+      - name: Run testing script
+        working-directory: ./tests
+        run: ./start_tests.sh
+      
+      #----------------------------------------------
+      #       Setup Node & install aws-cdk
+      #----------------------------------------------
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/Hydrogen"
+
+      - name: Install aws-cdk
+        run: npm install -g aws-cdk
+
+      #----------------------------------------------
+      #       Deploy to AWS using CDK
+      #----------------------------------------------
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}      
+
+      - name: Generate runtime requirements.txt
+        run: poetry export -f requirements.txt --output ${{ github.workspace }}/chalice-cdk-project-files/runtime/requirements.txt
+
+      - name: CDK Deploy
+        working-directory: ./chalice-cdk-project-files/infrastructure
+        run: poetry run cdk deploy
+
+
+  sync-terraform-assets:
+    #--------------------------------------------------
+    #       Sync terrafrom assets with Chalice outputs
+    #--------------------------------------------------
+    needs: deploy-chalice-assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            update_terraform_asset_attributes.py
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      
+      - name: Run sync script
+        run: |
+          pip install boto3
+          python ./scripts/update_terraform_asset_attributes.py
