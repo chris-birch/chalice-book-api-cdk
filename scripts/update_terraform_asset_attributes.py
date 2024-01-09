@@ -8,8 +8,6 @@ import boto3
 import json
 from botocore.exceptions import ClientError
 
-from devtools import debug
-
 print("Updating Terraform assets with Chalice outputs")
 
 session = boto3.Session()
