@@ -31,7 +31,7 @@ resource "aws_lambda_function" "user_api_handler" {
 
   source_code_hash = data.aws_s3_object.user_api_function_archive.checksum_sha256
 
-  s3_bucket = data.aws_s3_object.user_api_function_archive.id
+  s3_bucket = data.aws_s3_object.user_api_function_archive.bucket
   s3_key = data.aws_s3_object.user_api_function_archive.key
 
   environment {
