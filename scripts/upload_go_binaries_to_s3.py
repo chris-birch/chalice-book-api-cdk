@@ -12,7 +12,7 @@ from botocore.exceptions import ClientError
 
 from pathlib import Path
 
-S3_BUCKET_NAME = "github-actions-artifact-store-14z4a60uvvx3r" 
+S3_BUCKET_NAME = "github-actions-artifact-store-14z4a60uvvx3r" #This should remain globally unique
 AWS_REGION = os.getenv("AWS_DEFAULT_REGION", "eu-west-2")
 
 # Check that a folder has been given in app args
