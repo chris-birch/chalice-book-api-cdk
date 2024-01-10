@@ -1,5 +1,5 @@
 #
-# Lambda function to process CSV files and bulk update the DB
+# Lambda function to provide access to a single DB record via an API endpoint
 #
 
 
