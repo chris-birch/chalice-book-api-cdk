@@ -11,6 +11,7 @@ env:
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "chalice-book-api-cdk"
   CONFIG_DIRECTORY: "./terraform"
+  CDK_STACK_NAME: "chalice-cdk-project-files"
 
 jobs:
   deploy-terraform-assets:
