@@ -2,7 +2,7 @@ name: Deploy to AWS
 
 on:
   pull_request:
-    branches: [ "main-test" ]
+    branches: [ "main" ]
 
 env:
   POETRY_HOME: /opt/poetry
