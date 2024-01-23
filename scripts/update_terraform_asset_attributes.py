@@ -1,14 +1,12 @@
 #!/bin/python3
 
 #
-# Script to update Terraform assests with Chalice app outputs
+# Script to update Terraform assets with Chalice app outputs
 #
 
 import boto3
 import json
 from botocore.exceptions import ClientError
-
-from devtools import debug
 
 print("Updating Terraform assets with Chalice outputs")
 

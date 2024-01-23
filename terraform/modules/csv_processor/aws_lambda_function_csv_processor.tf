@@ -7,30 +7,10 @@
 ## Lambda Archive ##
 #
 
-# Create ZIP archive
-data "archive_file" "function_archive" {
-  type = "zip"
-
-  source_dir  = "${path.module}/lambda_function_code"
-  output_path = "${path.module}/archive/csv_processor_code.zip"
-}
-
-# App code archive store
-resource "aws_s3_bucket" "csv_processor_function_code" {
-  bucket = "csv-processor-function-code-${random_id.generator.dec}"
-}
-
-# Create app code archive
-resource "aws_s3_object" "csv_processor_function_archive" {
-  bucket = aws_s3_bucket.csv_processor_function_code.id
-
-  key    = "csv_processor_code.zip"
-  source = data.archive_file.function_archive.output_path
-
-  source_hash = filemd5("${path.module}/archive/csv_processor_code.zip")
-
-  depends_on = [ data.archive_file.function_archive ]
-
+# Define existing archive
+data "aws_s3_object" "csv_processor_function_archive" {
+  bucket = "github-actions-artifact-store-14z4a60uvvx3r"
+  key    = "csv_processor_function_code.zip"
 }
 
 
@@ -49,11 +29,12 @@ resource "aws_lambda_function" "csv_processor" {
   timeout = 5
   memory_size = 128
 
-  source_code_hash = data.archive_file.function_archive.output_base64sha256
+  source_code_hash = data.aws_s3_object.csv_processor_function_archive.checksum_sha256
   
 
-  s3_bucket = aws_s3_bucket.csv_processor_function_code.id
-  s3_key = aws_s3_object.csv_processor_function_archive.key
+
+  s3_bucket = data.aws_s3_object.csv_processor_function_archive.bucket
+  s3_key = data.aws_s3_object.csv_processor_function_archive.key
 
   environment {
     variables = {
@@ -63,7 +44,7 @@ resource "aws_lambda_function" "csv_processor" {
 
   depends_on = [ 
     aws_iam_role.csv_processor_execution_role, 
-    aws_s3_object.csv_processor_function_archive 
+    data.aws_s3_object.csv_processor_function_archive
   ]
 }
 

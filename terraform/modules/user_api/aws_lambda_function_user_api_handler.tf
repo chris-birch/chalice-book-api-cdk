@@ -1,5 +1,5 @@
 #
-# Lambda function to process CSV files and bulk update the DB
+# Lambda function to provide access to a single DB record via an API endpoint
 #
 
 
@@ -7,29 +7,10 @@
 ## Lambda Archive ##
 #
 
-# Create ZIP archive
-data "archive_file" "user_api_function_archive" {
-  type = "zip"
-
-  source_dir  = "${path.module}/lambda_function_code"
-  output_path = "${path.module}/archive/user_api_code.zip"
-}
-
-# App code archive store
-resource "aws_s3_bucket" "user_api_function_code" {
-  bucket = "user-api-function-code-${random_id.generator.dec}"
-}
-
-# Create app code archive
-resource "aws_s3_object" "user_api_function_archive" {
-  bucket = aws_s3_bucket.user_api_function_code.id
-
-  key    = "user_api_code.zip"
-  source = data.archive_file.user_api_function_archive.output_path
-  source_hash = filemd5("${path.module}/archive/csv_processor_code.zip")
-
-  depends_on = [ data.archive_file.user_api_function_archive ]
-
+# Define existing archive
+data "aws_s3_object" "user_api_function_archive" {
+  bucket = "github-actions-artifact-store-14z4a60uvvx3r"
+  key    = "user_api_function_code.zip"
 }
 
 
@@ -48,10 +29,11 @@ resource "aws_lambda_function" "user_api_handler" {
   timeout = 5
   memory_size = 128
 
-  source_code_hash = data.archive_file.user_api_function_archive.output_base64sha256
+  source_code_hash = data.aws_s3_object.user_api_function_archive.checksum_sha256
 
-  s3_bucket = aws_s3_bucket.user_api_function_code.id
-  s3_key = aws_s3_object.user_api_function_archive.key
+
+  s3_bucket = data.aws_s3_object.user_api_function_archive.bucket
+  s3_key = data.aws_s3_object.user_api_function_archive.key
 
   environment {
     variables = {
@@ -61,7 +43,7 @@ resource "aws_lambda_function" "user_api_handler" {
 
   depends_on = [ 
     aws_iam_role.user_api_execution_role, 
-    aws_s3_object.user_api_function_archive 
+    data.aws_s3_object.user_api_function_archive
   ]
 }
 

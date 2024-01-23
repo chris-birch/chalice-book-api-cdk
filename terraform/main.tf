@@ -43,3 +43,11 @@ module "chalice_cdk" {
   books_table_arn = module.core_resources.books_table_arn
   depends_on = [ module.core_resources ]
 }
+
+output "csv_bucket" {
+  value = module.csv_processor.csv_bucket
+}
+
+output "user_api_invoke_url" {
+  value = module.user_api.user_api_invoke_url
+}
