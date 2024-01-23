@@ -40,6 +40,8 @@ paths:
           description: Missing Authentication Token or invalid request
         "404":
           description: Book not found with specified book_id
+        "429":
+          description: Too Many Requests
       security:
       - api_key: []
 components:
