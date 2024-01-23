@@ -37,6 +37,8 @@ paths:
                   $ref: '#/components/schemas/ApiResponse'
         "403":
           description: Missing Authentication Token or invalid request
+        "404":
+          description: Book not found with specified book_id
       security:
       - api_key: []
 components:
