@@ -49,6 +49,9 @@ components:
     ApiResponse:
       type: object
       properties:
+        pk:
+          type: string
+          description: UUID of the book
         book_id:
           type: integer
           description: "User defined, unique ID for the book"
@@ -68,6 +71,7 @@ components:
         average_rating:
           type: integer
           format: float
+      additionalProperties: false
   securitySchemes:
     api_key:
       type: apiKey
