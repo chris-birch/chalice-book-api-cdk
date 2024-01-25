@@ -47,8 +47,20 @@ paths:
 components:
   schemas:
     ApiResponse:
+      required:
+      - authors
+      - average_rating
+      - book_id
+      - isbn
+      - language_code
+      - original_publication_year
+      - pk
+      - title
       type: object
       properties:
+        pk:
+          type: string
+          description: UUID of the book
         book_id:
           type: integer
           description: "User defined, unique ID for the book"
