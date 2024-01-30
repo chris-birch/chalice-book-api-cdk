@@ -3,6 +3,8 @@ name: Deploy to AWS
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'swagger/**'
 
 env:
   POETRY_HOME: /opt/poetry
