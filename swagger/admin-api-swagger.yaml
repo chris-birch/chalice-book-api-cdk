@@ -1,28 +1,27 @@
 openapi: 3.0.0
 info:
-  title: Books
+  title: Books (Admin)
   description: |
     This is a sample book server. You can lookup, edit and delete books.
   version: 1.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/chris-birch/BookApi/1.0.0
-  description: SwaggerHub API Auto Mocking
-- url: https://79ciii9fu7.execute-api.eu-west-2.amazonaws.com/api
-  description: AWS API Gateway
+- url: /
 tags:
-- name: books
-  description: Everything about books
+- name: read
+  description: Requires read permissions
+- name: write
+  description: Requires write permissions
 paths:
   /books:
     get:
       tags:
-      - books
-      summary: Get books
+      - read
+      summary: Get book(s)
       description: Get all books or query by book ID
       parameters:
       - name: book_id
         in: query
-        description: Return a single book
+        description: Query by Book ID
         required: false
         style: form
         explode: true
@@ -36,22 +35,16 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ApiResponse'
+                  $ref: '#/components/schemas/BookList'
         "400":
           description: Invalid query parameter used
-        "404":
-          description: Book ID not found
-      security:
-      - petstore_auth:
-        - write:pets
-        - read:pets
     post:
       tags:
-      - books
+      - write
       summary: Create new book(s)
       description: Create one or more new books.
       requestBody:
-        $ref: '#/components/requestBodies/PostBook'
+        $ref: '#/components/requestBodies/DataBookList'
       responses:
         "400":
           description: Book ID already exists or request body validation error
@@ -60,7 +53,7 @@ paths:
   /books/{pk}:
     get:
       tags:
-      - books
+      - read
       summary: Get book by PK
       description: Returns a single book using the UUID Primary Key
       parameters:
@@ -78,12 +71,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'
+                $ref: '#/components/schemas/Book'
         "404":
           description: Book not found
     put:
       tags:
-      - books
+      - write
       summary: Update an existing book
       parameters:
       - name: pk
@@ -103,13 +96,9 @@ paths:
           description: Book not found
         "204":
           description: Update successful
-      security:
-      - petstore_auth:
-        - write:pets
-        - read:pets
     delete:
       tags:
-      - books
+      - write
       summary: Delete a book
       parameters:
       - name: pk
@@ -125,42 +114,28 @@ paths:
           description: Successfully deleted book
         "404":
           description: Book not found
-      security:
-      - petstore_auth:
-        - write:pets
-        - read:pets
 components:
   schemas:
-    PostBook:
+    DataBookList:
       type: object
       properties:
         data:
           type: array
           items:
             $ref: '#/components/schemas/Book'
+    BookList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Book'
     Book:
-      type: object
-      properties:
-        book_id:
-          type: integer
-          description: "User defined, unique ID for the book"
-        isbn:
-          type: integer
-          description: ISBN Number for the book
-        authors:
-          type: string
-        original_publication_year:
-          type: integer
-          format: int64
-        title:
-          type: string
-          description: Title of the book
-        language_code:
-          type: string
-        average_rating:
-          type: integer
-          format: float
-    ApiResponse:
+      required:
+      - authors
+      - average_rating
+      - book_id
+      - isbn
+      - language_code
+      - original_publication_year
+      - title
       type: object
       properties:
         pk:
@@ -185,6 +160,7 @@ components:
         average_rating:
           type: integer
           format: float
+      additionalProperties: false
   requestBodies:
     Book:
       description: New Book object
@@ -193,19 +169,10 @@ components:
           schema:
             $ref: '#/components/schemas/Book'
       required: true
-    PostBook:
+    DataBookList:
       description: List of new Book objects
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PostBook'
+            $ref: '#/components/schemas/DataBookList'
       required: true
-  securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: http://petstore.swagger.io/oauth/dialog
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
