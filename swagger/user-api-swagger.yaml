@@ -5,8 +5,7 @@ info:
     Use this API to retreive a single book
   version: 1.0.0
 servers:
-- url: https://sxixlg9dd0.execute-api.eu-west-2.amazonaws.com/
-  description: AWS API Gateway
+- url: /
 tags:
 - name: books
   description: Everything about books
