@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Books (Admin)
+  description: |
+    This is a sample book server. You can lookup, edit and delete books.
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: read
+  description: Requires read permissions
+- name: write
+  description: Requires write permissions
+paths:
+  /books:
+    get:
+      tags:
+      - read
+      summary: Get book(s)
+      description: Get all books or query by book ID
+      parameters:
+      - name: book_id
+        in: query
+        description: Query by Book ID
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        "400":
+          description: Invalid query parameter used
+    post:
+      tags:
+      - write
+      summary: Create new book(s)
+      description: Create one or more new books.
+      requestBody:
+        $ref: '#/components/requestBodies/DataBookList'
+      responses:
+        "400":
+          description: Book ID already exists or request body validation error
+        "201":
+          description: Book created
+  /books/{pk}:
+    get:
+      tags:
+      - read
+      summary: Get book by PK
+      description: Returns a single book using the UUID Primary Key
+      parameters:
+      - name: pk
+        in: path
+        description: PK of book to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        "404":
+          description: Book not found
+    put:
+      tags:
+      - write
+      summary: Update an existing book
+      parameters:
+      - name: pk
+        in: path
+        description: PK of book to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/Book'
+      responses:
+        "400":
+          description: Request body validation failed
+        "404":
+          description: Book not found
+        "204":
+          description: Update successful
+    delete:
+      tags:
+      - write
+      summary: Delete a book
+      parameters:
+      - name: pk
+        in: path
+        description: PK of book to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Successfully deleted book
+        "404":
+          description: Book not found
+components:
+  schemas:
+    DataBookList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+    Book:
+      required:
+      - authors
+      - average_rating
+      - book_id
+      - isbn
+      - language_code
+      - original_publication_year
+      - title
+      type: object
+      properties:
+        pk:
+          type: string
+          description: UUID of the book
+        book_id:
+          type: integer
+          description: "User defined, unique ID for the book"
+        isbn:
+          type: integer
+          description: ISBN Number for the book
+        authors:
+          type: string
+        original_publication_year:
+          type: integer
+          format: int64
+        title:
+          type: string
+          description: Title of the book
+        language_code:
+          type: string
+        average_rating:
+          type: integer
+          format: float
+      additionalProperties: false
+  requestBodies:
+    Book:
+      description: New Book object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Book'
+      required: true
+    DataBookList:
+      description: List of new Book objects
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataBookList'
+      required: true

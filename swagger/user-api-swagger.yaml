@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: Books (User)
+  description: |
+    Use this API to retreive a single book
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: books
+  description: Everything about books
+paths:
+  /{book_id}:
+    get:
+      tags:
+      - books
+      summary: Get book
+      description: Get book by ID
+      parameters:
+      - name: book_id
+        in: path
+        description: Return a single book
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiResponse'
+        "403":
+          description: Missing Authentication Token or invalid request
+        "404":
+          description: Book not found with specified book_id
+        "429":
+          description: Too Many Requests
+      security:
+      - api_key: []
+components:
+  schemas:
+    ApiResponse:
+      required:
+      - authors
+      - average_rating
+      - book_id
+      - isbn
+      - language_code
+      - original_publication_year
+      - pk
+      - title
+      type: object
+      properties:
+        pk:
+          type: string
+          description: UUID of the book
+        book_id:
+          type: integer
+          description: "User defined, unique ID for the book"
+        isbn:
+          type: integer
+          description: ISBN Number for the book
+        authors:
+          type: string
+        original_publication_year:
+          type: integer
+          format: int64
+        title:
+          type: string
+          description: Title of the book
+        language_code:
+          type: string
+        average_rating:
+          type: integer
+          format: float
+      additionalProperties: false
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header
