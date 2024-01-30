@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Books (User API)
+  title: Books (User)
   description: |
     Use this API to retreive a single book
   version: 1.0.0
@@ -10,7 +10,7 @@ tags:
 - name: books
   description: Everything about books
 paths:
-  /v1/{book_id}:
+  /{book_id}:
     get:
       tags:
       - books
