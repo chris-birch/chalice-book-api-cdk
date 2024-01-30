@@ -35,7 +35,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BookList'
+                  $ref: '#/components/schemas/Book'
         "400":
           description: Invalid query parameter used
     post:
@@ -123,10 +123,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Book'
-    BookList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Book'
     Book:
       required:
       - authors
