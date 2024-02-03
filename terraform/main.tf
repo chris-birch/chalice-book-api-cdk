@@ -33,6 +33,9 @@ module "user_api" {
   books_table_name = module.core_resources.books_table_name
   books_table_arn = module.core_resources.books_table_arn
   depends_on = [ module.core_resources ]
+  DOMAIN_HOSTED_ZONE_ID=var.DOMAIN_HOSTED_ZONE_ID
+  CLIENT_DOMAIN_NAME=var.CLIENT_DOMAIN_NAME
+  CLIENT_CERTIFICATE_ARN=var.CLIENT_CERTIFICATE_ARN
 }
 
 module "chalice_cdk" {

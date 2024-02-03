@@ -119,3 +119,6 @@ terraform/modules/user_api/archive/
 
 # Go workspace file
 go.work
+
+# direnv
+.envrc
