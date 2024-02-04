@@ -1,11 +1,8 @@
 import os
-import json
 
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ssm as ssm
 from aws_cdk import aws_apigateway as apigateway
-
-from devtools import debug
 
 try:
     from aws_cdk import core as cdk
@@ -14,17 +11,27 @@ except ImportError:
 
 from chalice.cdk import Chalice
 
+# These environment variables are needed to use custom domain names
+if 'CHALICE_API_DOMAIN_NAME' not in os.environ:
+    raise Exception("'CHALICE_API_DOMAIN_NAME' environment variable not found")
+else:
+    API_DOMAIN_NAME = os.getenv("CHALICE_API_DOMAIN_NAME")
+
+if 'CHALICE_CERTIFICATE_ARN' not in os.environ:
+    raise Exception("'CHALICE_CERTIFICATE_ARN' environment variable not found")
+else:
+    CERTIFICATE_ARN = os.getenv("CHALICE_CERTIFICATE_ARN")
+
 
 RUNTIME_SOURCE_DIR = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), os.pardir, 'runtime')
-
 
 class ChaliceApp(cdk.Stack):
     
     def __init__(self, scope, id, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        # Retreive outputs created by Terraform
+        # Retrieve outputs created by Terraform
         books_table_name = ssm.StringParameter.from_string_parameter_attributes(
             self, "TableName", 
             parameter_name="/chalice_cdk_project/outputs/books_table/table_name"
@@ -38,15 +45,22 @@ class ChaliceApp(cdk.Stack):
         # Dynamically configure Chalice app using CDK 
         self.chalice = Chalice(
             self, 'ChaliceApp', source_dir=RUNTIME_SOURCE_DIR,
+            
+            # When deploying with CDK, add stage configs here, not in config.json
             stage_config={
+                "api_gateway_stage": "v1",
                 'environment_variables': {
                     'APP_TABLE_NAME': books_table_name
                 },
                 "manage_iam_role": False,
-                "iam_role_arn": api_handler_role
+                "iam_role_arn": api_handler_role,
+                "api_gateway_custom_domain": {
+                    "domain_name": API_DOMAIN_NAME,
+                    "certificate_arn": CERTIFICATE_ARN,
+                },
             }
-        )
-        
+        ) 
+
         # Save outputs needed to update Terraform assets later in the deployment
 
         cfn_api_handler_function = self.chalice.get_resource("APIHandler")

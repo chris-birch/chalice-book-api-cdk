@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ "main" ]
     paths-ignore:
-      - 'swagger/'
+      - 'swagger/**'
 
 env:
   POETRY_HOME: /opt/poetry
@@ -178,7 +178,7 @@ jobs:
       #----------------------------------------------
       #       Install app dependencies 
       #----------------------------------------------
-      - name: Check oetry lock file
+      - name: Check poetry lock file
         run: poetry check --lock
 
       - name: Install dependencies
