@@ -11,7 +11,6 @@ except ImportError:
 
 from chalice.cdk import Chalice
 
-
 def getEnvironmentVariable(EnVarName):
     if EnVarName not in os.environ:
         errorMessage = '{} environment variable not found'.format(EnVarName)
@@ -59,8 +58,8 @@ class ChaliceApp(cdk.Stack):
                     "certificate_arn": CERTIFICATE_ARN,
                 },
             }
-        ) 
-
+        )
+        
         # Save outputs needed to update Terraform assets later in the deployment
         cfn_api_handler_function = self.chalice.get_resource("APIHandler")
         api_handler_function = _lambda.Function.from_function_name(self, "MyFunction", cfn_api_handler_function.ref)
