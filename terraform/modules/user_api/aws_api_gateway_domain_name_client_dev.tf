@@ -29,4 +29,3 @@ resource "aws_api_gateway_base_path_mapping" "client_dev_user_api" {
   stage_name  = aws_api_gateway_stage.user_api_prod.stage_name
   domain_name = aws_api_gateway_domain_name.client_dev.domain_name
   base_path = aws_api_gateway_stage.user_api_prod.stage_name
-}

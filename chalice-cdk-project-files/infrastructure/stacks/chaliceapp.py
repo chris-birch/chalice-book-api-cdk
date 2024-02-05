@@ -3,8 +3,6 @@ import os
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ssm as ssm
 from aws_cdk import aws_apigateway as apigateway
-from aws_cdk import aws_route53 as route53
-import aws_cdk.aws_route53_targets as targets
 
 try:
     from aws_cdk import core as cdk
@@ -12,6 +10,7 @@ except ImportError:
     import aws_cdk as cdk
 
 from chalice.cdk import Chalice
+
 
 def getEnvironmentVariable(EnVarName):
     if EnVarName not in os.environ:
@@ -60,8 +59,8 @@ class ChaliceApp(cdk.Stack):
                     "certificate_arn": CERTIFICATE_ARN,
                 },
             }
-        )
-        
+        ) 
+
         # Save outputs needed to update Terraform assets later in the deployment
         cfn_api_handler_function = self.chalice.get_resource("APIHandler")
         api_handler_function = _lambda.Function.from_function_name(self, "MyFunction", cfn_api_handler_function.ref)
