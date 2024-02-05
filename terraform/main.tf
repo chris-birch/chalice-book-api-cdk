@@ -45,6 +45,8 @@ module "chalice_cdk" {
   books_table_name = module.core_resources.books_table_name
   books_table_arn = module.core_resources.books_table_arn
   depends_on = [ module.core_resources ]
+  DOMAIN_HOSTED_ZONE_ID=var.DOMAIN_HOSTED_ZONE_ID
+  API_DOMAIN_NAME=var.API_DOMAIN_NAME
 }
 
 output "csv_bucket" {

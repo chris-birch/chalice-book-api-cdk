@@ -3,6 +3,8 @@ import os
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ssm as ssm
 from aws_cdk import aws_apigateway as apigateway
+from aws_cdk import aws_route53 as route53
+import aws_cdk.aws_route53_targets as targets
 
 try:
     from aws_cdk import core as cdk
@@ -11,17 +13,16 @@ except ImportError:
 
 from chalice.cdk import Chalice
 
-# These environment variables are needed to use custom domain names
-if 'CHALICE_API_DOMAIN_NAME' not in os.environ:
-    raise Exception("'CHALICE_API_DOMAIN_NAME' environment variable not found")
-else:
-    API_DOMAIN_NAME = os.getenv("CHALICE_API_DOMAIN_NAME")
-
-if 'CHALICE_CERTIFICATE_ARN' not in os.environ:
-    raise Exception("'CHALICE_CERTIFICATE_ARN' environment variable not found")
-else:
-    CERTIFICATE_ARN = os.getenv("CHALICE_CERTIFICATE_ARN")
-
+def getEnvironmentVariable(EnVarName):
+    if EnVarName not in os.environ:
+        errorMessage = '{} environment variable not found'.format(EnVarName)
+        raise Exception(errorMessage)
+    else:
+        return os.getenv(EnVarName)
+    
+# These environment variables must be set to use custom domain names
+API_DOMAIN_NAME = getEnvironmentVariable("CHALICE_API_DOMAIN_NAME")
+CERTIFICATE_ARN = getEnvironmentVariable("CHALICE_CERTIFICATE_ARN")
 
 RUNTIME_SOURCE_DIR = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), os.pardir, 'runtime')
@@ -59,12 +60,12 @@ class ChaliceApp(cdk.Stack):
                     "certificate_arn": CERTIFICATE_ARN,
                 },
             }
-        ) 
-
+        )
+        
         # Save outputs needed to update Terraform assets later in the deployment
-
         cfn_api_handler_function = self.chalice.get_resource("APIHandler")
         api_handler_function = _lambda.Function.from_function_name(self, "MyFunction", cfn_api_handler_function.ref)
+        
         ssm.StringParameter(self, "EndpointURL",
             description="Endpoint URL of the Chalice CDK API HAndler",
             parameter_name="/chalice_cdk_project/outputs/EndpointURL",
@@ -78,6 +79,7 @@ class ChaliceApp(cdk.Stack):
         )
 
         cfn_api_gateway = apigateway.RestApi.from_rest_api_id(self, "api", rest_api_id="RestAPI")
+
         ssm.StringParameter(self, "RestAPIExecuteARN",
             description="API Handler Function ARN",
             parameter_name="/chalice_cdk_project/outputs/restApi/execute_arn",

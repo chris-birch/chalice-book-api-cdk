@@ -36,3 +36,9 @@ variable "DOMAIN_HOSTED_ZONE_ID" {
   description = "The AWS certificate used with the user api domain name"
   sensitive = true
 }
+
+variable "API_DOMAIN_NAME" {
+  type        = string
+  description = "The domain name used to access the admin API"
+  sensitive = true
+}
