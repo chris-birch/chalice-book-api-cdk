@@ -188,5 +188,5 @@ jobs:
       #       Run Pytest
       #----------------------------------------------
       - name: Run testing script
-        working-directory: ./tests
+        working-directory: ./tests/python
         run: ./start_tests.sh
