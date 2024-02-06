@@ -122,3 +122,6 @@ go.work
 
 # direnv
 .envrc
+
+# Schemathesis
+.hypothesis

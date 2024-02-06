@@ -3,7 +3,7 @@ printf '\n## Create local-only AWS access enviroment variables ##\n\n'
 
 export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-export AWS_DEFAULT_REGION=eu-west-2
+export AWS_DEFAULT_REGION=us-west-2
 
 # These are NOT real access keys!!! They're used for local Dynamodb access only.
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html#envvars-set
