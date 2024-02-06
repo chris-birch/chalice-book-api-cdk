@@ -31,21 +31,21 @@ type TableBasics struct {
 }
 
 type Book struct {
-	PK                      string  `dynamodbav:"pk"`
-	BookID                  int     `dynamodbav:"book_id"`
-	ISBN                    int     `dynamodbav:"isbn"`
-	Authors                 string  `dynamodbav:"authors"`
-	OriginalPublicationYear int     `dynamodbav:"original_publication_year"`
-	Title                   string  `dynamodbav:"title"`
-	LanguageCode            string  `dynamodbav:"language_code"`
-	AverageRating           float32 `dynamodbav:"average_rating"`
+	pk                        string  `dynamodbav:"pk"`
+	book_id                   int     `dynamodbav:"book_id"`
+	isbn                      int     `dynamodbav:"isbn"`
+	authors                   string  `dynamodbav:"authors"`
+	original_publication_year int     `dynamodbav:"original_publication_year"`
+	title                     string  `dynamodbav:"title"`
+	language_code             string  `dynamodbav:"language_code"`
+	average_rating            float32 `dynamodbav:"average_rating"`
 }
 
 // GetKey returns the composite primary key of the book in a format that can be
 // sent to DynamoDB.
 func (book Book) GetKey() map[string]types.AttributeValue {
 
-	id, err := attributevalue.Marshal(book.BookID)
+	id, err := attributevalue.Marshal(book.book_id)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +54,7 @@ func (book Book) GetKey() map[string]types.AttributeValue {
 
 // GetBook gets book data from the DynamoDB table
 func (basics TableBasics) GetBook(pk string) (Book, error) {
-	book := Book{PK: pk}
+	book := Book{pk: pk}
 	response, err := basics.DynamoDbClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		Key: book.GetKey(), TableName: aws.String(basics.TableName),
 	})

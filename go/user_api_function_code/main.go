@@ -15,8 +15,8 @@ var TableName string = os.Getenv("TABLENAME")
 
 // Scan Dynamodb and return a list of all books found
 func GetBooks(bookId int) ([]Book, error) {
-	RequestedBook := Book{BookID: bookId}
-	return (TableBasics.Scan(TableBasics{TableName: TableName, DynamoDbClient: client}, RequestedBook.BookID))
+	RequestedBook := Book{book_id: bookId}
+	return (TableBasics.Scan(TableBasics{TableName: TableName, DynamoDbClient: client}, RequestedBook.book_id))
 }
 
 // Error Handler - Client
