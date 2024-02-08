@@ -29,7 +29,8 @@ resource "aws_lambda_function" "user_api_handler" {
   timeout = 5
   memory_size = 128
 
-  source_code_hash = data.aws_s3_object.user_api_function_archive.checksum_sha256
+  # source_code_hash = data.aws_s3_object.user_api_function_archive.checksum_sha256 # Not sure why this doesn't work
+  source_code_hash = base64sha256(data.aws_s3_object.user_api_function_archive.etag)
 
 
   s3_bucket = data.aws_s3_object.user_api_function_archive.bucket
